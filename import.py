@@ -3,6 +3,7 @@ from google.cloud import firestore
 import argparse
 import time
 import multiprocessing as mp
+from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 
 def convert_value(value, value_type):
     if value_type == 'number':
@@ -27,7 +28,8 @@ def main(args):
     collection = args.collection
     firedb = firestore.Client()
     jobs = []
-    pool = mp.Pool(maxtasksperchild=50)
+    # pool = mp.Pool(maxtasksperchild=50)
+    executor = PoolExecutor()
     with open(args.json_file, 'rb') as json_file:
         parser = ijson.parse(json_file)
         values = {}
@@ -44,10 +46,13 @@ def main(args):
                 # save_document(firedb, collection, document, values_dict)
                 #jobs.append(multisave(
                 #    firedb, collection, document, values_dict))
-                pool.apply_async(
+                #pool.apply_async(
+                #    save_document, (firedb, collection, document, values_dict))
+                executor.submit(
                     save_document, (firedb, collection, document, values_dict))
-    pool.close()
-    pool.join()
+    executor.close()
+    #pool.close()
+    #pool.join()
     #for p in jobs:
     #    p.join()
     print("finished at {0}".format(time.time()))
