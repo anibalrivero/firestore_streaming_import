@@ -18,7 +18,7 @@ def main(args):
     print("started at {0}".format(time.time()))
     collection = args.collection
     firedb = firestore.Client()
-    with open(args.json_file) as json_file:
+    with open(args.json_file, 'rb') as json_file:
         parser = ijson.parse(json_file)
         values = {}
         for prefix, event, value in parser:
