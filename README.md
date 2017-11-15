@@ -3,10 +3,13 @@
 - Utilizes ijson python json streaming library along with the official firestore library to import a large json piecemeal into Google Cloud Firestore (BETA).
 
 == How to run:
+
 === Requirements: 
+- `sudo apt install libyajl2`
 - Create the virtual environment if you wish (recommended)
 - run `pip install -r requirements.txt`
 - Download a Firebase service file of your project
+
 === How to run
 
 ```bash 
