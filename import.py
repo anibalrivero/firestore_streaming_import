@@ -38,9 +38,9 @@ def main(args):
     print("finished at {0}".format(time.time()))
 
 if __name__ == '__main__':
-    argParser = argparse.ArgumentParser(description="Import a large json file into a Firebase via json Streaming.\
-                                                     Uses HTTP PATCH requests.  Two-pass script, run once normally,\
-                                                     then again in --priority_mode.")
+    argParser = argparse.ArgumentParser(
+        description="Import a large json file into Firestore "
+        "via json Streaming.")
     argParser.add_argument(
         'collection', help="Specify the Firestore base collection")
     argParser.add_argument('json_file', help="The JSON file to import.")
