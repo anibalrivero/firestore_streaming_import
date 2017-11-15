@@ -11,7 +11,7 @@ def convert_value(value, value_type):
 
 
 def save_document(db, collection, document, data):
-    print("Saving {}".format(document))
+    # print("Saving {}".format(document))
     doc_ref = db.collection(collection).document(document)
     doc_ref.set(data)
 
