@@ -19,6 +19,7 @@ def save_document(db, collection, document, data):
 def multisave(db, collection, document, data):
     p = mp.Process(target=save_document, args=(db, collection, document, data))
     p.start()
+
     return p
 
 def main(args):
@@ -26,6 +27,7 @@ def main(args):
     collection = args.collection
     firedb = firestore.Client()
     jobs = []
+    pool = mp.Pool()
     with open(args.json_file, 'rb') as json_file:
         parser = ijson.parse(json_file)
         values = {}
@@ -40,10 +42,14 @@ def main(args):
                 values_dict[route[-2]][route[-1]] = convert_value(value, event)
             if event == 'end_map' and len(route) == 1 and prefix is not '':
                 # save_document(firedb, collection, document, values_dict)
-                jobs.append(multisave(
-                    firedb, collection, document, values_dict))
-    for p in jobs:
-        p.join()
+                #jobs.append(multisave(
+                #    firedb, collection, document, values_dict))
+                pool.apply_async(
+                    save_document, (firedb, collection, document, values_dict))
+    pool.close()
+    pool.join()
+    #for p in jobs:
+    #    p.join()
     print("finished at {0}".format(time.time()))
 
 if __name__ == '__main__':
