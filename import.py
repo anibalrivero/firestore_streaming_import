@@ -27,7 +27,7 @@ def main(args):
     collection = args.collection
     firedb = firestore.Client()
     jobs = []
-    pool = mp.Pool()
+    pool = mp.Pool(maxtasksperchild=50)
     with open(args.json_file, 'rb') as json_file:
         parser = ijson.parse(json_file)
         values = {}
