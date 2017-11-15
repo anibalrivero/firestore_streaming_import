@@ -40,7 +40,8 @@ def main(args):
                 values_dict[route[-2]][route[-1]] = convert_value(value, event)
             if event == 'end_map' and len(route) == 1 and prefix is not '':
                 # save_document(firedb, collection, document, values_dict)
-                jobs.append(multisave(firedb, collection, document, values_dict))
+                jobs.append(multisave(
+                    firedb, collection, document, values_dict))
     for p in jobs:
         p.join()
     print("finished at {0}".format(time.time()))
