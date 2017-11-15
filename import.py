@@ -23,14 +23,14 @@ def main(args):
         values = {}
         for prefix, event, value in parser:
             # print(prefix, event, value)
+            route = prefix.split(".")
             if prefix == '' and event == 'map_key':
                 document = value
             if event == 'start_map':
-                values_dict = {prefix.split(".")[-1]: {}}
+                values_dict = {route[-1]: {}}
             if value is not None and event not in ('map_key', ):
-                route = prefix.split(".")
                 values_dict[route[-2]][route[-1]] = convert_value(value, event)
-            if event == 'end_map' and len(prefix.split(".")) > 1:
+            if event == 'end_map' and len(route) == 1 and prefix is not '':
                 print("Saving {}".format(document))
                 save_document(firedb, collection, document, values_dict)
 
