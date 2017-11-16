@@ -17,6 +17,7 @@ def save_document(db, collection, document, data):
     doc_ref.set(data)
 
 def save_document2(collection, document, data):
+#    print("processing {}".format(document))
     db = firestore.Client()
     doc_ref = db.collection(collection).document(document)
     doc_ref.set(data)
@@ -52,8 +53,9 @@ def main(args):
                     #    firedb, collection, document, values_dict))
                     #pool.apply_async(
                     #    save_document, (firedb, collection, document, values_dict))
+                    #print("submitting {}".format(document))
                     executor.submit(
-                        save_document2, (collection, document, values_dict))
+                        save_document2, collection, document, values_dict)
     #pool.close()
     #pool.join()
     #for p in jobs:
