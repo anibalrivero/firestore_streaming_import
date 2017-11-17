@@ -59,7 +59,7 @@ def main(args):
                         save_document2, collection, document, values_dict)
     print("finished at {0}".format(time.time()))
 
-if __name__ == '__main__':
+def cli_setup():
     arg_parser = argparse.ArgumentParser(
         description="Import a large json file into Firestore "
         "via json Streaming.")
@@ -67,4 +67,7 @@ if __name__ == '__main__':
         'collection', help="Specify the Firestore base collection")
     arg_parser.add_argument('json_file', help="The JSON file to import.")
 
-    main(arg_parser.parse_args())
+    return arg_parser
+
+if __name__ == '__main__':
+    main(cli_setup().parse_args())
