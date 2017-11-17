@@ -60,6 +60,9 @@ def main(args):
     print("finished at {0}".format(time.time()))
 
 def cli_setup():
+    """
+    Set up the command line arguments
+    """
     arg_parser = argparse.ArgumentParser(
         description="Import a large json file into Firestore "
         "via json Streaming.")
