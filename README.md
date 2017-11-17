@@ -1,16 +1,32 @@
-= Firebase Streaming Import
+# Firestore Streaming Import
 
-- Utilizes ijson python json streaming library along with the official firestore library to import a large json piecemeal into Google Cloud Firestore (BETA).
+Utilizes ijson python json streaming library along with the official firestore 
+library to import a large json piecemeal into Google Cloud Firestore (BETA).
+This does a specific kind of import and expect a specific type of json to import.
 
-== How to run:
+## JSON expected format
 
-=== Requirements: 
+```json
+{
+  {
+    "document id":{
+      "object_name": {
+        "key": "value",
+        ...
+      }
+    }
+  },
+  ....
+}
+```
+
+## Requirements: 
 - `sudo apt install libyajl2`
 - Create the virtual environment if you wish (recommended)
-- run `pip install -r requirements.txt`
+- `pip install -r requirements.txt`
 - Download a Firebase service file of your project
 
-=== How to run
+## How to run
 
 ```bash 
 export GOOGLE_APPLICATION_CREDENTIALS="path/to/your/keyfile.json"

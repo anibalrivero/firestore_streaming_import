@@ -6,34 +6,25 @@ import multiprocessing as mp
 from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 
 def convert_value(value, value_type):
+    """
+    ijson converts all the numbers into Decimal type, this cast them to float
+    so they can be inserted in firestore.
+    """
     if value_type == 'number':
         return float(value)
     return value
 
-
-def save_document(db, collection, document, data):
-    print("Saving {}".format(document))
-    doc_ref = db.collection(collection).document(document)
-    doc_ref.set(data)
-
 def save_document2(collection, document, data):
-#    print("processing {}".format(document))
-    db = firestore.Client()
+    # print("processing {}".format(document))
+    # since the db object is not serializable, we need to open the database
+    # every time so this method can be parallelized
+    db = firestore.Client() 
     doc_ref = db.collection(collection).document(document)
     doc_ref.set(data)
-
-def multisave(db, collection, document, data):
-    p = mp.Process(target=save_document, args=(db, collection, document, data))
-    p.start()
-
-    return p
 
 def main(args):
     print("started at {0}".format(time.time()))
     collection = args.collection
-    firedb = firestore.Client()
-    jobs = []
-    # pool = mp.Pool(maxtasksperchild=50)
     with PoolExecutor() as executor:
         with open(args.json_file, 'rb') as json_file:
             parser = ijson.parse(json_file)
@@ -48,18 +39,8 @@ def main(args):
                 if value is not None and event not in ('map_key', ):
                     values_dict[route[-2]][route[-1]] = convert_value(value, event)
                 if event == 'end_map' and len(route) == 1 and prefix is not '':
-                    # save_document(firedb, collection, document, values_dict)
-                    #jobs.append(multisave(
-                    #    firedb, collection, document, values_dict))
-                    #pool.apply_async(
-                    #    save_document, (firedb, collection, document, values_dict))
-                    #print("submitting {}".format(document))
                     executor.submit(
                         save_document2, collection, document, values_dict)
-    #pool.close()
-    #pool.join()
-    #for p in jobs:
-    #    p.join()
     print("finished at {0}".format(time.time()))
 
 if __name__ == '__main__':
