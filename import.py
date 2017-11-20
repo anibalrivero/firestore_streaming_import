@@ -53,7 +53,7 @@ def main(args):
                 if value is not None and event not in ('map_key', ):
                     curr_d = values_dict
                     for key in route[1:-1]:
-                        curr_d = curr_d.setdefault(k, {})
+                        curr_d = curr_d.setdefault(key, {})
                     curr_d[route[-1]] = convert_value(value, event)
                 if event == 'end_map' and len(route) == 1 and prefix is not '':
                     executor.submit(
