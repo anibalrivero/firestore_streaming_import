@@ -49,14 +49,16 @@ def main(args):
                 route = prefix.split(".")
                 if prefix == '' and event == 'map_key':
                     document = value
-                if event == 'start_map':
-                    values_dict = {route[-1]: {}}
+                    values_dict = {}
                 if value is not None and event not in ('map_key', ):
-                    values_dict[route[-2]][route[-1]] = convert_value(
-                        value, event)
+                    curr_d = values_dict
+                    for key in route[1:-1]:
+                        curr_d = curr_d.setdefault(k, {})
+                    curr_d[route[-1]] = convert_value(value, event)
                 if event == 'end_map' and len(route) == 1 and prefix is not '':
                     executor.submit(
                         save_document2, collection, document, values_dict)
+                    values_dict = {}
     print("finished at {0}".format(time.time()))
 
 def cli_setup():
