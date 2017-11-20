@@ -10,6 +10,7 @@ This does a specific kind of import and expect a specific type of json to import
 {
   {
     "document id":{
+      "key": "value",
       "object_name": {
         "key": "value",
         ...
