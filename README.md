@@ -1,8 +1,6 @@
 # Firestore Streaming Import
 
-Utilizes ijson python json streaming library along with the official firestore 
-library to import a large json piecemeal into Google Cloud Firestore (BETA).
-This does a specific kind of import and expect a specific type of json to import.
+Utilizes ijson python json streaming library along with the official firestore library to import a large json piecemeal into Google Cloud Firestore (BETA). This does a specific kind of import and expects a specific type of json to import.
 
 ## JSON expected format
 
@@ -21,7 +19,8 @@ This does a specific kind of import and expect a specific type of json to import
 }
 ```
 
-## Requirements: 
+## Requirements
+
 - `sudo apt install libyajl2`
 - Create the virtual environment if you wish (recommended)
 - `pip install -r requirements.txt`
