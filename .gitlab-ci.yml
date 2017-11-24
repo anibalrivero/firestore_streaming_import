@@ -1,0 +1,3 @@
+syntax_check:
+  script:
+    - workon pylint3 && pylint --disable=F0401 *.py
