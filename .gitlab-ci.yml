@@ -3,4 +3,4 @@
       - export WORKON_HOME=$HOME/.virtualenvs
       - export PROJECT_HOME=$HOME/projects
       - source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
-      - /home/ubuntu/.virtualenvs/pylint3/bin/ --disable=F0401 *.py
+      - /home/ubuntu/.virtualenvs/pylint3/bin/pylint --disable=F0401 *.py
