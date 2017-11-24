@@ -1,3 +1,7 @@
-syntax_check:
-  script:
-    - workon pylint3 && pylint --disable=F0401 *.py
+  syntax_check:
+    script:
+      - export WORKON_HOME=$HOME/.virtualenvs
+      - export PROJECT_HOME=$HOME/projects
+      - source /usr/share/virtualenvwrapper/virtualenvwrapper.sh
+      - workon pylint3
+      - pylint --disable=F0401 *.py
