@@ -46,7 +46,7 @@ def main(args):
             parser = ijson.parse(json_file)
             is_array = False
             for prefix, event, value in parser:
-                print(prefix, event, value)
+                # print(prefix, event, value)
                 route = prefix.split(".")
                 # Starting a dictionary:
                 if prefix == '' and event == 'map_key':
