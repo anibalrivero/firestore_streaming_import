@@ -44,17 +44,33 @@ def main(args):
     with PoolExecutor() as executor:
         with open(args.json_file, 'rb') as json_file:
             parser = ijson.parse(json_file)
+            is_array = False
             for prefix, event, value in parser:
-                # print(prefix, event, value)
+                print(prefix, event, value)
                 route = prefix.split(".")
+                # Starting a dictionary:
                 if prefix == '' and event == 'map_key':
                     document = value
                     values_dict = {}
+                if event == 'start_array':
+                    is_array = True
+                if event == 'end_array':
+                    is_array = False
+                # Storing a values in dictionary
                 if value is not None and event not in ('map_key', ):
                     curr_d = values_dict
-                    for key in route[1:-1]:
-                        curr_d = curr_d.setdefault(key, {})
-                    curr_d[route[-1]] = convert_value(value, event)
+                    if is_array:
+                        for key in route[1:-3]:
+                            curr_d = curr_d.setdefault(key, {})
+                        if route[-2] not in curr_d:
+                            curr_d[route[-2]] = list()
+                        curr_d = curr_d[route[-2]]
+                        curr_d.append(convert_value(value, event))
+                    else:
+                        for key in route[1:-1]:
+                            curr_d = curr_d.setdefault(key, {})
+                        curr_d[route[-1]] = convert_value(value, event)
+                # Saving the document:
                 if event == 'end_map' and len(route) == 1 and prefix is not '':
                     executor.submit(
                         save_document2, collection, document, values_dict)
