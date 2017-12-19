@@ -62,12 +62,10 @@ def main(args):
                     if is_array:
                         for key in route[1:-3]:
                             curr_d = curr_d.setdefault(key, {})
-                        if route[-2] not in curr_d:
-                            curr_d[route[-2]] = list()
-                        curr_d = curr_d[route[-2]]
+                        curr_d = curr_d.setdefault(route[-2], [])
                         curr_d.append(convert_value(value, event))
                     else:
-                        for key in route[1:-1]:
+                        for key in route[1:-2]:
                             curr_d = curr_d.setdefault(key, {})
                         curr_d[route[-1]] = convert_value(value, event)
                 # Saving the document:
