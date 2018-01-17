@@ -11,6 +11,7 @@ from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 from google.cloud import firestore
 import ijson.backends.yajl2_cffi as ijson
 
+
 def convert_value(value: "any", value_type: str):
     """
     ijson converts all the numbers into Decimal type, this cast them to float
