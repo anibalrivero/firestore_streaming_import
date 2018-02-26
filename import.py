@@ -70,7 +70,7 @@ def main(args):
             is_array = False
             document_collection = {}
             for prefix, event, value in parser:
-                # print(prefix, event, value)
+                print(prefix, event, value)
                 route = prefix.split(".")
                 # Starting a dictionary:
                 if prefix == '' and event == 'map_key':
