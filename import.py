@@ -93,7 +93,8 @@ def main(args):
                         curr_d = curr_d.setdefault(route[-2], [])
                         curr_d.append(convert_value(value, event))
                     else:
-                        for key in route[1:-2]:
+                        for key in route[0:-2]:
+                            print(key)
                             curr_d = curr_d.setdefault(key, {})
                         curr_d[route[-1]] = convert_value(value, event)
                 # Saving the document:
