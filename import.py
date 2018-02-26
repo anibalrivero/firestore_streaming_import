@@ -63,6 +63,7 @@ def main(args):
     print("started at {0}".format(time.time()))
     collection = args.collection
     max_per_thread = args.max_per_thread
+
     with PoolExecutor() as executor:
         with open(args.json_file, 'rb') as json_file:
             parser = ijson.parse(json_file)
@@ -102,7 +103,10 @@ def main(args):
                     #                collection,
                     #                document_collection)
                     # save_documents(collection, document_collection)
+                    ### DEBUGGING
                     print(document_collection)
+                    exit()
+                    ### END DEBUGGING
                     document_collection = {}
             if document_collection:  # we have some documents left
                 pass
@@ -121,6 +125,7 @@ def cli_setup():
         'collection', help="Specify the Firestore base collection")
     arg_parser.add_argument('json_file', help="The JSON file to import.")
     arg_parser.add_argument('-m', '--max_per_thread',
+
                             default=500,
                             type=int,
                             dest="max_per_thread",
