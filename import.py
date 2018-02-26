@@ -78,12 +78,16 @@ def main(args):
                     values_dict = {}
                 if event == 'start_array':
                     is_array = True
+                    print("Starting array")
                 if event == 'end_array':
+                    print("ending array")
                     is_array = False
                 # Storing a values in dictionary
                 if value is not None and event not in ('map_key',):
                     curr_d = values_dict
                     if is_array:
+                        print("is array. Route {}, value {}, event {}".format(
+                            route, value, event))
                         for key in route[1:-3]:
                             curr_d = curr_d.setdefault(key, {})
                         curr_d = curr_d.setdefault(route[-2], [])
