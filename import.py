@@ -103,6 +103,8 @@ def main(args):
                                     document_collection)
                     # save_documents(collection, document_collection)
                     document_collection = {}
+            if document_collection:  # we have some documents left
+                save_documents(collection, document_collection)
     print("finished at {0}".format(time.time()))
 
 
