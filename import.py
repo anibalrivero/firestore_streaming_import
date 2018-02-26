@@ -35,6 +35,26 @@ def save_document2(collection: str, document: str, data: dict):
     doc_ref.set(data)
 
 
+def save_documents(collection: str, documents: dict):
+    """
+    Saves a collection of documents into the firebase database
+
+    Args:
+        collection:
+        documents:
+
+    Returns:
+
+    """
+    firedb = firestore.Client()
+    batch = firedb.batch()
+
+    for document_id, data in documents.items():
+        doc_ref = firedb.collection(collection).document(document_id)
+        batch.set(doc_ref, data)
+    batch.commit()
+
+
 def main(args):
     """
     Entry point. It parses a json file incrementally and inserts the parsed
@@ -42,10 +62,12 @@ def main(args):
     """
     print("started at {0}".format(time.time()))
     collection = args.collection
+    max_per_thread = args.max_per_thread
     with PoolExecutor() as executor:
         with open(args.json_file, 'rb') as json_file:
             parser = ijson.parse(json_file)
             is_array = False
+            document_collection = {}
             for prefix, event, value in parser:
                 # print(prefix, event, value)
                 route = prefix.split(".")
@@ -71,10 +93,18 @@ def main(args):
                         curr_d[route[-1]] = convert_value(value, event)
                 # Saving the document:
                 if event == 'end_map' and len(route) == 1 and prefix is not '':
-                    executor.submit(
-                        save_document2, collection, document, values_dict)
+                    # executor.submit(save_document2,
+                    # collection, document, values_dict)
+                    document_collection[document] = values_dict
                     values_dict = {}
+                if len(document_collection) == max_per_thread:
+                    # executor.submit(save_documents,
+                    #               collection,
+                    #               document_collection)
+                    save_document2(collection, document_collection)
+                    document_collection = {}
     print("finished at {0}".format(time.time()))
+
 
 def cli_setup():
     """
@@ -86,6 +116,13 @@ def cli_setup():
     arg_parser.add_argument(
         'collection', help="Specify the Firestore base collection")
     arg_parser.add_argument('json_file', help="The JSON file to import.")
+    arg_parser.add_argument('-m', '--max_per_thread',
+                            default=500,
+                            type=int,
+                            dest="max_per_thread",
+                            help="Maximum number of documents to be stored"
+                                 " in a single thread",
+                            )
 
     return arg_parser
 
