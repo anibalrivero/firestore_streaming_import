@@ -80,7 +80,7 @@ def main(args):
                 if event == 'end_array':
                     is_array = False
                 # Storing a values in dictionary
-                if value is not None and event not in ('map_key', ):
+                if value is not None and event not in ('map_key',):
                     curr_d = values_dict
                     if is_array:
                         for key in route[1:-3]:
@@ -98,10 +98,10 @@ def main(args):
                     document_collection[document] = values_dict
                     values_dict = {}
                 if len(document_collection) == max_per_thread:
-                    # executor.submit(save_documents,
-                    #               collection,
-                    #               document_collection)
-                    save_documents(collection, document_collection)
+                    executor.submit(save_documents,
+                                    collection,
+                                    document_collection)
+                    # save_documents(collection, document_collection)
                     document_collection = {}
     print("finished at {0}".format(time.time()))
 
@@ -112,7 +112,7 @@ def cli_setup():
     """
     arg_parser = argparse.ArgumentParser(
         description="Import a large json file into Firestore "
-        "via json Streaming.")
+                    "via json Streaming.")
     arg_parser.add_argument(
         'collection', help="Specify the Firestore base collection")
     arg_parser.add_argument('json_file', help="The JSON file to import.")
@@ -125,6 +125,7 @@ def cli_setup():
                             )
 
     return arg_parser
+
 
 if __name__ == '__main__':
     main(cli_setup().parse_args())
