@@ -101,7 +101,7 @@ def main(args):
                     # executor.submit(save_documents,
                     #               collection,
                     #               document_collection)
-                    save_document2(collection, document_collection)
+                    save_documents(collection, document_collection)
                     document_collection = {}
     print("finished at {0}".format(time.time()))
 
