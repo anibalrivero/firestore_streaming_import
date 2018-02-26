@@ -98,13 +98,15 @@ def main(args):
                     document_collection[document] = values_dict
                     values_dict = {}
                 if len(document_collection) == max_per_thread:
-                    executor.submit(save_documents,
-                                    collection,
-                                    document_collection)
+                    #executor.submit(save_documents,
+                    #                collection,
+                    #                document_collection)
                     # save_documents(collection, document_collection)
+                    print(document_collection)
                     document_collection = {}
             if document_collection:  # we have some documents left
-                save_documents(collection, document_collection)
+                pass
+                # save_documents(collection, document_collection)
     print("finished at {0}".format(time.time()))
 
 
