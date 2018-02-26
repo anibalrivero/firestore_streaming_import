@@ -6,14 +6,12 @@ Utilizes ijson python json streaming library along with the official firestore l
 
 ```json
 {
-  {
     "document id":{
       "key": "value",
       "object_name": {
         "key": "value",
         ...
       }
-    }
   },
   ....
 }
@@ -43,5 +41,9 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  -m MAX_PER_THREAD, --max_per_thread MAX_PER_THREAD
+                        Maximum number of documents to be stored in a single
+                        thread
+
 ```
 
