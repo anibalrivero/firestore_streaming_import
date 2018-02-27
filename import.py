@@ -60,7 +60,6 @@ def save_documents(collection: str, documents: dict, debug=False):
             logger.debug("processing {}".format(document_id))
             doc_ref = firedb.collection(collection).document(document_id)
             batch.set(doc_ref, data)
-            raise Exception("failing on purpose: {}".format(document_id))
         batch.commit()
     except Exception as e:
         logger.exception(e)
