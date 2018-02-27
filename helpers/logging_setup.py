@@ -16,10 +16,10 @@ def get_logger(name, debug=False):
     logger = logging.getLogger(name)
     level = logging.DEBUG if debug else logging.INFO
     logger.setLevel(level)
-    fh = logging.FileHandler('import.log')
-    ch = logging.StreamHandler()
-    fh.setFormatter(formatter)
-    ch.setFormatter(formatter)
-    logger.addHandler(fh)
-    logger.addHandler(ch)
+    file_handler = logging.FileHandler('import.log')
+    console_handler = logging.StreamHandler()
+    file_handler.setFormatter(formatter)
+    console_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
     return logger

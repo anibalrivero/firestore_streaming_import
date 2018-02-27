@@ -4,12 +4,13 @@
 Utilizes ijson python json streaming library along with the official firestore
 library to import a large json piecemeal into Google Cloud Firestore (BETA).
 """
+# pylint: disable=logging-format-interpolation
 
 import argparse
 import time
-import ijson.backends.yajl2_cffi as ijson
 
 from concurrent.futures import ProcessPoolExecutor as PoolExecutor
+import ijson.backends.yajl2_cffi as ijson
 from google.cloud import firestore
 from helpers import logging_setup
 
@@ -29,7 +30,7 @@ def save_document2(collection: str, document: str, data: dict):
     Saves the data into the firebase database.
 
     """
-    logger = logging_setup.get_logger()
+    logger = logging_setup.get_logger("save_document2")
     logger.debug("processing {}".format(document))
     # since the db object is not serializable, we need to open the database
     # every time so this method can be parallelized
@@ -61,8 +62,8 @@ def save_documents(collection: str, documents: dict, debug=False):
             doc_ref = firedb.collection(collection).document(document_id)
             batch.set(doc_ref, data)
         batch.commit()
-    except Exception as e:
-        logger.exception(e)
+    except Exception as ex:
+        logger.exception(ex)
         logger.error("The following ids failed to insert:")
         logger.error("{}".format(documents.keys()))
 
@@ -149,13 +150,11 @@ def cli_setup():
         "collection", help="Specify the Firestore base collection")
     arg_parser.add_argument("json_file", help="The JSON file to import.")
     arg_parser.add_argument("-m", "--max_per_thread",
-
                             default=500,
                             type=int,
                             dest="max_per_thread",
                             help="Maximum number of documents to be stored"
-                                 " in a single thread",
-                            )
+                                 " in a single thread")
     arg_parser.add_argument("-d", "--debug", action="store_true")
 
     return arg_parser
