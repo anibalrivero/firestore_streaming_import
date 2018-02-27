@@ -78,7 +78,8 @@ def main(args):
     logger.info("started at {0}".format(time.time()))
     collection = args.collection
     max_per_thread = args.max_per_thread
-
+    info_threadshold = 100000
+    counter = 0
     with PoolExecutor() as executor:
         with open(args.json_file, 'rb') as json_file:
             parser = ijson.parse(json_file)
@@ -124,13 +125,17 @@ def main(args):
                                     document_collection,
                                     is_debug)
                     # save_documents(collection, document_collection, is_debug)
-                    ### DEBUGGING
                     logger.debug(document_collection)
                     document_collection = {}
-                    break
-                    ### END DEBUGGING
+                    counter += max_per_thread
+                    if counter % info_threadshold == 0:
+                        logger.info(
+                            "Documents saved so far: {}".format(counter))
             if document_collection:  # we have some documents left
                 save_documents(collection, document_collection)
+                logger.info(
+                    "Documents saved in total: {}".format(
+                        len(collection) + counter))
     logger.info("finished at {0}".format(time.time()))
 
 
