@@ -37,14 +37,15 @@ def save_document2(collection: str, document: str, data: dict):
 
 def save_documents(collection: str, documents: dict):
     """
-    Saves a collection of documents into the firebase database
+    Saves a collection of documents into the firebase database.
+    This is usually called from a thread.
 
     Args:
-        collection:
-        documents:
+        collection: the name of the collection
+        documents: {document_id: {key: value ... } ... }
 
     Returns:
-
+        None
     """
     firedb = firestore.Client()
     batch = firedb.batch()
