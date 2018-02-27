@@ -52,7 +52,7 @@ def save_documents(collection: str, documents: dict, debug=False):
         None
     """
     try:
-        logger = logging_setup.get_logger(__name__, debug)
+        logger = logging_setup.get_logger("save_documents", debug)
         firedb = firestore.Client()
         batch = firedb.batch()
 
