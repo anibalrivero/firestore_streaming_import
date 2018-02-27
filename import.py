@@ -7,9 +7,11 @@ library to import a large json piecemeal into Google Cloud Firestore (BETA).
 
 import argparse
 import time
+import ijson.backends.yajl2_cffi as ijson
+
 from concurrent.futures import ProcessPoolExecutor as PoolExecutor
 from google.cloud import firestore
-import ijson.backends.yajl2_cffi as ijson
+from helpers import logging_setup
 
 
 def convert_value(value: "any", value_type: str):
@@ -27,7 +29,8 @@ def save_document2(collection: str, document: str, data: dict):
     Saves the data into the firebase database.
 
     """
-    # print("processing {}".format(document))
+    logger = logging_setup.get_logger()
+    logger.debug("processing {}".format(document))
     # since the db object is not serializable, we need to open the database
     # every time so this method can be parallelized
     firedb = firestore.Client()
@@ -35,7 +38,7 @@ def save_document2(collection: str, document: str, data: dict):
     doc_ref.set(data)
 
 
-def save_documents(collection: str, documents: dict):
+def save_documents(collection: str, documents: dict, debug=False):
     """
     Saves a collection of documents into the firebase database.
     This is usually called from a thread.
@@ -43,17 +46,26 @@ def save_documents(collection: str, documents: dict):
     Args:
         collection: the name of the collection
         documents: {document_id: {key: value ... } ... }
+        debug: for logging. Are we debugging?
 
     Returns:
         None
     """
-    firedb = firestore.Client()
-    batch = firedb.batch()
+    try:
+        logger = logging_setup.get_logger(__name__, debug)
+        firedb = firestore.Client()
+        batch = firedb.batch()
 
-    for document_id, data in documents.items():
-        doc_ref = firedb.collection(collection).document(document_id)
-        batch.set(doc_ref, data)
-    batch.commit()
+        for document_id, data in documents.items():
+            logger.debug("processing {}".format(document_id))
+            doc_ref = firedb.collection(collection).document(document_id)
+            batch.set(doc_ref, data)
+            raise Exception("failing on purpose: {}".format(document_id))
+        batch.commit()
+    except Exception as e:
+        logger.exception(e)
+        logger.error("The following ids failed to insert:")
+        logger.error("{}".format(documents.keys()))
 
 
 def main(args):
@@ -61,7 +73,9 @@ def main(args):
     Entry point. It parses a json file incrementally and inserts the parsed
     objects as documents in firebase
     """
-    print("started at {0}".format(time.time()))
+    is_debug = args.debug
+    logger = logging_setup.get_logger(__name__, is_debug)
+    logger.info("started at {0}".format(time.time()))
     collection = args.collection
     max_per_thread = args.max_per_thread
 
@@ -71,7 +85,7 @@ def main(args):
             is_array = False
             document_collection = {}
             for prefix, event, value in parser:
-                print(prefix, event, value)
+                # logger.debug(prefix, event, value)
                 route = prefix.split(".")
                 # Starting a dictionary:
                 if prefix == '' and event == 'map_key':
@@ -79,23 +93,23 @@ def main(args):
                     values_dict = {}
                 if event == 'start_array':
                     is_array = True
-                    print("Starting array")
+                    logger.debug("Starting array")
                 if event == 'end_array':
-                    print("ending array")
+                    logger.debug("ending array")
                     is_array = False
                 # Storing a values in dictionary
                 if value is not None and event not in ('map_key',):
                     curr_d = values_dict
                     if is_array:
-                        print("is array. Route {}, value {}, event {}".format(
-                            route, value, event))
+                        logger.debug(
+                            "is array. Route {}, value {}, event {}".format(
+                                route, value, event))
                         for key in route[1:-3]:
                             curr_d = curr_d.setdefault(key, {})
                         curr_d = curr_d.setdefault(route[-2], [])
                         curr_d.append(convert_value(value, event))
                     else:
                         for key in route[1:-1]:
-                            print(key)
                             curr_d = curr_d.setdefault(key, {})
                         curr_d[route[-1]] = convert_value(value, event)
                 # Saving the document:
@@ -105,19 +119,20 @@ def main(args):
                     document_collection[document] = values_dict
                     values_dict = {}
                 if len(document_collection) == max_per_thread:
-                    #executor.submit(save_documents,
-                    #                collection,
-                    #                document_collection)
-                    # save_documents(collection, document_collection)
+                    executor.submit(save_documents,
+                                    collection,
+                                    document_collection,
+                                    is_debug)
+                    # save_documents(collection, document_collection, is_debug)
                     ### DEBUGGING
-                    print(document_collection)
+                    logger.debug(document_collection)
                     exit()
                     ### END DEBUGGING
                     document_collection = {}
             if document_collection:  # we have some documents left
                 pass
                 # save_documents(collection, document_collection)
-    print("finished at {0}".format(time.time()))
+    logger.info("finished at {0}".format(time.time()))
 
 
 def cli_setup():
@@ -128,9 +143,9 @@ def cli_setup():
         description="Import a large json file into Firestore "
                     "via json Streaming.")
     arg_parser.add_argument(
-        'collection', help="Specify the Firestore base collection")
-    arg_parser.add_argument('json_file', help="The JSON file to import.")
-    arg_parser.add_argument('-m', '--max_per_thread',
+        "collection", help="Specify the Firestore base collection")
+    arg_parser.add_argument("json_file", help="The JSON file to import.")
+    arg_parser.add_argument("-m", "--max_per_thread",
 
                             default=500,
                             type=int,
@@ -138,9 +153,10 @@ def cli_setup():
                             help="Maximum number of documents to be stored"
                                  " in a single thread",
                             )
+    arg_parser.add_argument("-d", "debug", action="store_true")
 
     return arg_parser
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(cli_setup().parse_args())
