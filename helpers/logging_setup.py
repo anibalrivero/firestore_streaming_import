@@ -12,11 +12,11 @@ def get_logger(name, debug=False):
 
     """
     formatter = logging.Formatter(
-        "%(asctime)s %(threadName)s %(levelname)s:%(name)s 	%(message)s")
+        "%(asctime)s %(processName)-10s %(levelname)s:%(name)s 	%(message)s")
     logger = logging.getLogger(name)
     level = logging.DEBUG if debug else logging.INFO
     logger.setLevel(level)
-    fh = logging.FileHandler('import.log', mode="w")
+    fh = logging.FileHandler('import.log')
     ch = logging.StreamHandler()
     fh.setFormatter(formatter)
     ch.setFormatter(formatter)
