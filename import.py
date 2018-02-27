@@ -153,7 +153,7 @@ def cli_setup():
                             help="Maximum number of documents to be stored"
                                  " in a single thread",
                             )
-    arg_parser.add_argument("-d", "debug", action="store_true")
+    arg_parser.add_argument("-d", "--debug", action="store_true")
 
     return arg_parser
 
