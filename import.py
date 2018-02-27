@@ -126,9 +126,9 @@ def main(args):
                     # save_documents(collection, document_collection, is_debug)
                     ### DEBUGGING
                     logger.debug(document_collection)
+                    document_collection = {}
                     break
                     ### END DEBUGGING
-                    document_collection = {}
             if document_collection:  # we have some documents left
                 save_documents(collection, document_collection)
     logger.info("finished at {0}".format(time.time()))
