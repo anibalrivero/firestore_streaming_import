@@ -39,7 +39,7 @@ def save_document2(collection: str, document: str, data: dict):
     doc_ref.set(data)
 
 
-def save_documents(collection: str, documents: dict, debug=False):
+def save_documents(collection: str, documents: dict, debug=False, retries=3):
     """
     Saves a collection of documents into the firebase database.
     This is usually called from a thread.
@@ -48,6 +48,8 @@ def save_documents(collection: str, documents: dict, debug=False):
         collection: the name of the collection
         documents: {document_id: {key: value ... } ... }
         debug: for logging. Are we debugging?
+        retries: internal, in case of an error, how many more times the
+         system is going to retry to insert the documents.
 
     Returns:
         None
@@ -63,9 +65,16 @@ def save_documents(collection: str, documents: dict, debug=False):
             batch.set(doc_ref, data)
         batch.commit()
     except Exception as ex:
-        logger.exception(ex)
-        logger.error("The following ids failed to insert:")
-        logger.error("{}".format(documents.keys()))
+        if retries > 0:
+            keys = list(documents.keys())
+            logger.warning(
+                "There was an error trying to insert ids "
+                "{} to {}, retrying".format(keys[0], keys[-1]))
+            save_documents(collection, documents, debug, retries - 1)
+        else:
+            logger.error("The following ids failed to insert:")
+            logger.error("{}".format(documents.keys()))
+            logger.error("The error was: {}".format(ex))
 
 
 def main(args):
