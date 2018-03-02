@@ -144,7 +144,7 @@ def main(args):
                 save_documents(collection, document_collection)
                 logger.info(
                     "Documents saved in total: {}".format(
-                        len(collection) + counter))
+                        len(document_collection) + counter))
     logger.info("finished at {0}".format(time.time()))
 
 
